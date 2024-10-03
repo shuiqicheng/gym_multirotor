@@ -43,7 +43,7 @@ elif model_name == "sac":
         env,
         verbose=1,
         tensorboard_log=f'logs/log_{ENV_NAME}',
-        policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 256], vf=[256, 256])),
+        policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 256], qf=[256, 256])),
         learning_rate=0.00005,
         buffer_size=int(1e6),
         batch_size=256,
