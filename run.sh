@@ -1,0 +1,1 @@
+MUJOCO_EGL_DEVICE_ID=0 CUDA_VISIBLE_DEVICES=0 MUJOCO_GL='egl' python env_test.py
