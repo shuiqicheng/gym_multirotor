@@ -9,7 +9,7 @@ import wandb
 from wandb.integration.sb3 import WandbCallback
 
 
-SEED = 123
+SEED = 0
 ENV_NAME = "QuadrotorPlusHoverEnv-v0"
 num_envs = 1
 total_timesteps = 5000000
@@ -81,7 +81,7 @@ if use_wandb:
     }
     run = wandb.init(
         project="drone",
-        name=f"{model_name}_{noise_level}_{noise_curriculum}-2",
+        name=f"{model_name}_{noise_level}_{noise_curriculum}-3",
         config=config,
         sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
         monitor_gym=False,  # auto-upload the videos of agents playing the game
@@ -95,5 +95,5 @@ if use_wandb:
 else:
     model.learn(total_timesteps=total_timesteps)
 
-model.save(f"./policy/{model_name}_{ENV_NAME}_{noise_level}_{noise_curriculum}_{total_timesteps}-2")
+model.save(f"./policy/{model_name}_{ENV_NAME}_{noise_level}_{noise_curriculum}_{total_timesteps}-3")
 del model

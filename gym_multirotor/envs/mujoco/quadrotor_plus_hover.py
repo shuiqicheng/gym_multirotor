@@ -15,6 +15,9 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
     """
 
     def __init__(self, xml_name="quadrotor_plus.xml", frame_skip=5, env_bounding_box=1.2, randomize_reset=False, observation_noise_std=0.0):
+        self.time_step = 0
+        self.rate = 0.0
+        self.noise_curriculum = "linear"  # "linear", None, "exponential", "cosine"
         super().__init__(xml_name=xml_name, frame_skip=frame_skip, env_bounding_box=env_bounding_box, randomize_reset=randomize_reset, observation_noise_std=observation_noise_std)
 
     @property
@@ -80,9 +83,35 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
                 "mujoco_qvel": self.mujoco_qvel}
 
         done = self.is_done(ob)
+
+        self.time_step += 1
+        
         if self.observation_noise_std:
             # ob += self.np_random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
-            ob += np.random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+            if not self.noise_curriculum:
+                ob += np.random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+            elif self.noise_curriculum == "linear":
+                noise = np.random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+                if self.time_step < 1000000:
+                    self.rate = 0.0
+                elif self.time_step > 4000000:
+                    self.rate = 1.0
+                else:
+                    self.rate = (self.time_step - 1000000) / 3000000.0
+                ob += (noise * self.rate)
+            elif self.noise_curriculum == "exponential":
+                noise = np.random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+                if self.time_step < 1000000:
+                    self.rate = 0.0
+                elif self.time_step > 4000000:
+                    self.rate = 1.0
+                else:
+                    self.rate = np.exp((self.time_step - 1000000) / 3000000.0) / 2.72
+                ob += (noise * self.rate)
+            else:
+                raise NotImplementedError
+        if self.time_step % 10000 == 0:
+            print(f"{self.time_step}: {self.rate}")
         return ob, reward, done, info
 
     def _get_obs(self):
