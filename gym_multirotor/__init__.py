@@ -8,7 +8,7 @@ from gym_multirotor.envs.mujoco import *
 register(
     id='QuadrotorPlusHoverEnv-v0',
     entry_point='gym_multirotor.envs.mujoco.quadrotor_plus_hover:QuadrotorPlusHoverEnv',
-    kwargs=dict(frame_skip=5, env_bounding_box=1.2, randomize_reset=True)
+    kwargs=dict(frame_skip=5, env_bounding_box=1.2, randomize_reset=True, observation_noise_std=0.1)
 )
 
 register(

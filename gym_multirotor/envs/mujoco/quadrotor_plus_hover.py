@@ -14,8 +14,8 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
         frame_skip (int): Number of frames to skip before application of next action command to the environment from the control policy.
     """
 
-    def __init__(self, xml_name="quadrotor_plus.xml", frame_skip=5, env_bounding_box=1.2, randomize_reset=False):
-        super().__init__(xml_name=xml_name, frame_skip=frame_skip, env_bounding_box=env_bounding_box, randomize_reset=randomize_reset)
+    def __init__(self, xml_name="quadrotor_plus.xml", frame_skip=5, env_bounding_box=1.2, randomize_reset=False, observation_noise_std=0.0):
+        super().__init__(xml_name=xml_name, frame_skip=frame_skip, env_bounding_box=env_bounding_box, randomize_reset=randomize_reset, observation_noise_std=observation_noise_std)
 
     @property
     def hover_force(self):
@@ -81,7 +81,8 @@ class QuadrotorPlusHoverEnv(UAVBaseEnv):
 
         done = self.is_done(ob)
         if self.observation_noise_std:
-            ob += self.np_random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+            # ob += self.np_random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
+            ob += np.random.uniform(low=-self.observation_noise_std, high=self.observation_noise_std, size=ob.shape)
         return ob, reward, done, info
 
     def _get_obs(self):
