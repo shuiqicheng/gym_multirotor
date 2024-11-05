@@ -20,12 +20,13 @@ COMMIT = "different noise level"
 
 env = gym.make(ENV_NAME)  # ENV_NAMES = ["QuadrotorXHoverEnv-v0", "TiltrotorPlus8DofHoverEnv-v0", "QuadrotorPlusHoverEnv-v0"]
 noise_level = "0" + str(env.observation_noise_std)[2:]
+noise_curriculum = env.noise_curriculum
 
 if model_name == "ppo":
     model = PPO(
         "MlpPolicy",
         env,
-        verbose=1,
+        verbose=0,
         tensorboard_log=f'logs/log_{ENV_NAME}',
         policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 256], vf=[256, 256])),
         learning_rate=0.00005,
@@ -61,7 +62,7 @@ elif model_name == "trpo":
     model = TRPO(
         "MlpPolicy",
         env,
-        verbose=1,
+        verbose=0,
         tensorboard_log=f'logs/log_{ENV_NAME}',
         policy_kwargs=dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 256], vf=[256, 256])),
         learning_rate=0.00005,
@@ -80,7 +81,7 @@ if use_wandb:
     }
     run = wandb.init(
         project="drone",
-        name=f"{model_name}_{noise_level}",
+        name=f"{model_name}_{noise_level}_{noise_curriculum}-2",
         config=config,
         sync_tensorboard=True,  # auto-upload sb3's tensorboard metrics
         monitor_gym=False,  # auto-upload the videos of agents playing the game
@@ -94,5 +95,5 @@ if use_wandb:
 else:
     model.learn(total_timesteps=total_timesteps)
 
-model.save(f"./policy/{model_name}_{ENV_NAME}_{noise_level}_{total_timesteps}")
+model.save(f"./policy/{model_name}_{ENV_NAME}_{noise_level}_{noise_curriculum}_{total_timesteps}-2")
 del model
